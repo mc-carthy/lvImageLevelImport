@@ -1,7 +1,6 @@
 cellSize = 16
 
-tileMapDictionary = {}
-tileMapDictionary['black'] = '0,0,0,255'
+colours = { ["black"] = {0, 0, 0, 255}, ["blue"] = {0, 0, 255, 255} }
 
 mapData = {}
 
@@ -16,10 +15,10 @@ end
 function love.draw()
     for x = 0, imageWidth do
         for y = 0, imageHeight do
-            if mapData[x][y] == tileMapDictionary['black'] then
-                love.graphics.setColor(0, 0, 0, 255)
+            if compareColourTables(mapData[x][y],colours['black']) == true then
+                love.graphics.setColor(colours['black'])
             else
-                love.graphics.setColor(0, 191, 191, 255)
+                love.graphics.setColor(colours['blue'])
             end
             love.graphics.rectangle('fill', x * cellSize, y * cellSize, cellSize, cellSize)
         end
@@ -34,8 +33,15 @@ function importImageData(fileLocation)
     for x = 0, imageWidth do
         mapData[x] = {}
         for y = 0, imageHeight do
-            r, g, b, a = imageData:getPixel(x, y)
-            mapData[x][y] = r .. ',' .. g .. ',' .. b .. ',' .. a
+            mapData[x][y] = {imageData:getPixel(x, y)}
         end
     end
+end
+
+function compareColourTables(t1, t2)
+    -- Compares the r, g, b, a values for two tables
+    for i=1, 4, 1 do
+        if t1[i] ~= t2[i] then return false end
+    end
+    return true
 end
